@@ -1,8 +1,16 @@
-version: '3'
+version: "3"
 
 services:
+  labappkiii:
+    image: labapp.jar
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+
   postgres:
-    image: "postgres"
+    image: postgres:13.1
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "user" ]
       timeout: 45s
@@ -12,20 +20,10 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=Books
+      - APP_DB_USER=docker
+      - APP_DB_PASS=docker
+      - APP_DB_NAME=docker
     volumes:
       - ./db:/docker-entrypoint-initdb.d/
     ports:
       - 5432:5432
-          
- books:
-    depends_on:
-     - postgres
-    image: Lab2-EMT-193060-0.0.1-SNAPSHOT.jar
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/Books
-    ports:
-      - "8080:8080"
