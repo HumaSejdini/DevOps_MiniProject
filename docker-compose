@@ -1,22 +1,31 @@
-version: '2'
+version: '3'
 
 services:
-  app:
-    image: 'docker-spring-boot-postgres:latest'
-    build:
-      context: .
-    container_name: app
-    depends_on:
-      - db
+  postgres:
+    image: "postgres"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "user" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/compose-postgres
-      - SPRING_DATASOURCE_USERNAME=compose-postgres
-      - SPRING_DATASOURCE_PASSWORD=compose-postgres
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=Books
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432
           
-  db:
-    image: 'postgres:13.1-alpine'
-    container_name: db
+ books:
+    depends_on:
+     - postgres
+    image: Lab2-EMT-193060-0.0.1-SNAPSHOT.jar
+    build:
+      context: ./
+      dockerfile: Dockerfile
     environment:
-      - POSTGRES_USER=compose-postgres
-      - POSTGRES_PASSWORD=compose-postgres
+    SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/Books
+    ports:
+      - "8080:8080"
