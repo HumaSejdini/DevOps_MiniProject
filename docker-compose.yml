@@ -2,6 +2,8 @@ version: "3"
 
 services:
   labappkiii:
+    depends_on:
+      - postgres
     image: labapp.jar
     build:
       context: src
@@ -10,7 +12,7 @@ services:
       - "8085:8085"
 
   postgres:
-    image: postgres:13.1
+    image: "postgres"
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "user" ]
       timeout: 45s
@@ -18,12 +20,10 @@ services:
       retries: 10
     restart: always
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - APP_DB_USER=docker
-      - APP_DB_PASS=docker
-      - APP_DB_NAME=docker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=emtlab2
     volumes:
       - ./db:/docker-entrypoint-initdb.d/
     ports:
-      - 5432:5432
+      - "5432:5432"
