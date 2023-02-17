@@ -27,10 +27,8 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name : Clean Tests
+    - name : Build with Maven and Clean Tests
       run: mvn clean install -DskipTests
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
     
     - name: Build and Push Docker Image
       uses: mr-smithers-excellent/docker-build-push@v4
