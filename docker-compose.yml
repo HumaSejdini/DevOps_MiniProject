@@ -27,3 +27,9 @@ services:
       - ./db:/docker-entrypoint-initdb.d/
     ports:
       - "5432:5432"
+ 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
